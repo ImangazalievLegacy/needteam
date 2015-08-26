@@ -38,4 +38,13 @@ class AccountService implements AccountServiceInterface
 
         return true;
     }
+
+    /**
+     * @param  string $code
+     * @return bool
+     */
+    public function activate($code)
+    {
+        return (bool) $this->userRepository->activate($code);
+    }
 }

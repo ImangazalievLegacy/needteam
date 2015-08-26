@@ -31,4 +31,13 @@ class AccountController extends Controller
 
         return Redirect::route('home')->with('global', 'Ошибка при регистрации. Пожалуйста, повторите попытку позже.');
     }
+
+    public function getActivate($code)
+    {
+        if ($this->accountService->activate($code)) {
+            return Redirect::route('home')->with('global', 'Аккаунт активирован. Теперь вы можете войти');
+        }
+
+        return Redirect::route('home')->with('global', 'Ошибка при активации аккаунта. Пожалуйста, повторите попытку позже.');
+    }
 }

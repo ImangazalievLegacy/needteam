@@ -27,4 +27,24 @@ class DbUserRepository implements UserRepositoryInterface
 
 		return $user->save() ? $user : false;
 	}
+
+	/**
+	 * @param  string $code
+	 * @return bool|App\Models\User
+	 */
+	public function activate($code)
+	{
+		$user = $this->users->where('hash', $code)->where('active', false);
+
+        if ($user->count() == 0) {
+            return false;
+        }
+
+        $user = $user->first();
+
+        $user->active = 1;
+        $user->hash   = '';
+
+        return $user->save() ? $user : false;
+	}
 }
