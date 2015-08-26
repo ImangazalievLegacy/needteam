@@ -42,6 +42,24 @@ class AccountServiceTest extends TestCase
         $this->assertTrue($result);
     }
 
+    public function testActivate()
+    {
+        $userRepository = Mockery::mock('App\Repositories\User\UserRepositoryInterface');
+        $userRepository->shouldReceive('activate')->once()->andReturn(true);
+        
+        $accountService = new AccountService($userRepository);
+        $result = $accountService->activate('activationCode');
+
+        $this->assertTrue($result);
+
+        $userRepository->shouldReceive('activate')->once()->andReturn(false);
+        
+        $accountService = new AccountService($userRepository);
+        $result = $accountService->activate('activationCode');
+
+        $this->assertFalse($result);
+    }
+
     public function tearDown()
     {
         Mockery::close();

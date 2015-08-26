@@ -52,6 +52,23 @@ class AccountControllerTest extends TestCase
         $this->assertRedirectedToRoute('home');
     }
 
+    public function testGetActivate()
+    {
+        //ошибка при активации
+        $this->accountService->shouldReceive('activate')->once()->andReturn(false);
+        $this->app->instance('App\Services\AccountServiceInterface', $this->accountService);
+        
+        $this->action('GET', 'AccountController@getActivate', ['activationCode']);
+        $this->assertRedirectedToRoute('home');
+
+        //аккаунт успешно активирован
+        $this->accountService->shouldReceive('activate')->once()->andReturn(true);
+        $this->app->instance('App\Services\AccountServiceInterface', $this->accountService);
+        
+        $this->action('GET', 'AccountController@getActivate', ['activationCode']);
+        $this->assertRedirectedToRoute('home');
+    }
+
     public function tearDown()
     {
         Mockery::close();
