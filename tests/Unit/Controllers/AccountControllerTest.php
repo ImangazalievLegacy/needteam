@@ -69,6 +69,31 @@ class AccountControllerTest extends TestCase
         $this->assertRedirectedToRoute('home');
     }
 
+    public function testPostLogin()
+    {
+        $data = $this->getUserData();
+
+        //ошибка при авторизации
+        Auth::shouldReceive('attempt')->once()->andReturn(false);
+
+        $this->action('POST', 'AccountController@postLogin', $data);
+        $this->assertResponseStatus(302);
+
+        //авторизация прошла успешно
+        Auth::shouldReceive('attempt')->once()->andReturn(true);
+
+        $this->action('POST', 'AccountController@postLogin', $data);
+        $this->assertResponseStatus(302);
+    }
+
+    public function testLogout()
+    {
+        Auth::shouldReceive('logout')->once();
+
+        $this->action('GET', 'AccountController@getLogout');
+        $this->assertRedirectedToRoute('home');
+    }
+
     public function tearDown()
     {
         Mockery::close();
