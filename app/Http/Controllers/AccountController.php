@@ -21,6 +21,11 @@ class AccountController extends Controller
         return view('account.create');
     }
 
+    public function getLogin()
+    {
+        return view('account.login');
+    }
+
     public function postCreate(Requests\CreateUserRequest $request)
     {
         $data = $request->only('username', 'email', 'password');
@@ -39,5 +44,27 @@ class AccountController extends Controller
         }
 
         return Redirect::route('home')->with('global', 'Ошибка при активации аккаунта. Пожалуйста, повторите попытку позже.');
+    }
+
+    public function postLogin(Requests\SignInRequest $request)
+    {
+        $data = $request->only('email', 'password');
+
+        $data['active'] = true;
+
+        $remember = $request->has('remember');
+
+        if (\Auth::attempt($data, $remember)) {
+            return Redirect::intended('/');
+        } else {
+            return Redirect::back()->with('global', 'Email/password wrong or account not activated')->withInput($data);
+        }
+    }
+
+    public function getLogout()
+    {
+        \Auth::logout();
+
+        return Redirect::route('home');
     }
 }
