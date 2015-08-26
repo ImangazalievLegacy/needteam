@@ -7,4 +7,5 @@ use App\Http\Requests;
 interface AccountServiceInterface
 {
 	public function register($data);
+	public function activate($code);
 }
