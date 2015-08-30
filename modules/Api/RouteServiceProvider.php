@@ -1,0 +1,87 @@
+<?php
+
+namespace Modules\Api;
+
+use Illuminate\Routing\Router;
+use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use Modules\Api\Formatter;
+use Modules\Api\Serializer;
+
+class RouteServiceProvider extends ServiceProvider
+{
+    protected $prefix;
+
+    /**
+     * This namespace is applied to the controller routes in your routes file.
+     *
+     * In addition, it is set as the URL generator's root namespace.
+     *
+     * @var string
+     */
+    protected $namespace;
+
+    /**
+     * Define your route model bindings, pattern filters, etc.
+     *
+     * @param  \Illuminate\Routing\Router  $router
+     * @return void
+     */
+    public function boot(Router $router)
+    {
+        $config = $this->app->make('config');
+        
+        $this->prefix    = $config->get('api.prefix');
+        $this->namespace = $config->get('api.namespace');
+
+        if (!$this->isApiRequest()) {
+            return;
+        }
+
+        $this->registerMiddlewares();
+
+        parent::boot($router);
+    }
+
+    /**
+     * @return void
+     */
+    public function register()
+    {
+        $this->app->instance('api.formatter', new Formatter);
+        $this->app->instance('api.serializer', new Serializer);
+    }
+
+    public function registerMiddlewares()
+    {
+        $kernel = $this->app->make('Illuminate\Contracts\Http\Kernel');
+
+        $kernel->prependMiddleware('Modules\Api\Dispatcher');
+    }
+
+    /**
+     * Define the routes for the application.
+     *
+     * @param  \Illuminate\Routing\Router  $router
+     * @return void
+     */
+    public function map(Router $router)
+    {
+        if (!$this->isApiRequest()) {
+            return;
+        }
+
+        $router->group(['namespace' => $this->namespace, 'prefix' => $this->prefix], function ($router) {
+            require base_path(dirname($this->namespace).'/routes.php');
+        });
+    }
+
+    /**
+     * @return bool
+     */
+    public function isApiRequest()
+    {
+        $request = $this->app->make('request');
+
+        return starts_with(ltrim($request->path(), '/'), $this->prefix);
+    }
+}
