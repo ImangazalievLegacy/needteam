@@ -7,7 +7,6 @@ use Illuminate\Contracts\Support\Arrayable;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Exception;
 
@@ -70,14 +69,11 @@ class Dispatcher
             // the response received from the controller
             $response = $next($request);
 
-            if ($response instanceof RedirectResponse) {
-                $content = null;
-            } else {
-                $content = $response->getOriginalContent();
-            }
-           
             $statusCode = $response->status();
             $headers    = $response->headers->all();
+
+            // if this redirection
+            $content = ($statusCode == 302) ? ['redirect_url' => $response->getTargetUrl()] : $response->getOriginalContent();
 
             if (is_object($content)) {
                 if ($content instanceof Arrayable) {
@@ -87,7 +83,7 @@ class Dispatcher
                 }
             }
 
-            $format = $this->formats['success'];
+            $format = $this->getFormat('success');
 
             $values = [
                 ':status'   => $statusCode,
@@ -96,7 +92,7 @@ class Dispatcher
 
         } catch (HttpExceptionInterface $e) {
 
-            $format = $this->formats['error'];
+            $format = $this->getFormat('error');
 
             $statusCode = $e->getStatusCode();
 
@@ -108,7 +104,7 @@ class Dispatcher
 
         } catch (Exception $e) {
 
-            $format = $this->formats['error'];
+            $format = $this->getFormat('error');
 
             $statusCode = 500;
 
@@ -129,5 +125,10 @@ class Dispatcher
         $response = new Response($content, $statusCode, $headers);
 
         return $response;
+    }
+
+    protected function getFormat($name)
+    {
+        return $this->formats[$name];
     }
 }
