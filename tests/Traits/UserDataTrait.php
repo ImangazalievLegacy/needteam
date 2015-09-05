@@ -7,7 +7,7 @@ use App\Models\User;
 
 trait UserDataTrait {
 
-	public function getUserData()
+    public function getUserData()
     {
         return [
             'username' => 'User',
@@ -34,6 +34,6 @@ trait UserDataTrait {
 
     public function loginAs($data)
     {
-    	Auth::attempt($data);
+        Auth::attempt($data);
     }
 }

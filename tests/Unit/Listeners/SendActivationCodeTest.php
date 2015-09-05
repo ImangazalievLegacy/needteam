@@ -33,8 +33,8 @@ class SendActivationCodeTest extends TestCase
 
         $mailer->shouldReceive('send')->once();
 
-    	$listener = new SendActivationCode($mailer);
-    	$listener->handle($event);
+        $listener = new SendActivationCode($mailer);
+        $listener->handle($event);
     }
 
     public function tearDown()

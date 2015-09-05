@@ -11,7 +11,7 @@ use Redirect;
 
 class AccountController extends Controller
 {
-	public function __construct(AccountServiceInterface $accountService)
+    public function __construct(AccountServiceInterface $accountService)
     {
         $this->accountService = $accountService;
     }

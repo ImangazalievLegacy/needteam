@@ -21,7 +21,7 @@ class AccountServiceTest extends TestCase
     {
         $data = $this->getUserData();
 
-    	$userRepository = Mockery::mock('App\Repositories\User\UserRepositoryInterface');
+        $userRepository = Mockery::mock('App\Repositories\User\UserRepositoryInterface');
         $userRepository->shouldReceive('register')->once()->andReturn(false);
         
         $accountService = new AccountService($userRepository);
