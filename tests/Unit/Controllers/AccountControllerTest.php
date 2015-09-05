@@ -30,21 +30,21 @@ class AccountControllerTest extends TestCase
     {
         \Artisan::call('migrate', array('--force' => true));
 
-        //валидация не прошла
-    	$this->action('POST', 'AccountController@postCreate');
-    	$this->assertResponseStatus(302);
-    	$this->assertSessionHasErrors();
+        // validation failed
+        $this->action('POST', 'AccountController@postCreate');
+        $this->assertResponseStatus(302);
+        $this->assertSessionHasErrors();
 
         $data = $this->getUserData();
 
-        //ошибка при регистрации
+        // error when registering
         $this->accountService->shouldReceive('register')->once()->andReturn(false);
         $this->app->instance('App\Services\AccountServiceInterface', $this->accountService);
 
         $this->action('POST', 'AccountController@postCreate', $data);
-    	$this->assertRedirectedToRoute('home');
+        $this->assertRedirectedToRoute('home');
 
-        //пользователь успешно зарегистрирован
+        // the user is successfully registered
         $this->accountService->shouldReceive('register')->once()->andReturn(true);
         $this->app->instance('App\Services\AccountServiceInterface', $this->accountService);
 
@@ -54,14 +54,14 @@ class AccountControllerTest extends TestCase
 
     public function testGetActivate()
     {
-        //ошибка при активации
+        // error when activating
         $this->accountService->shouldReceive('activate')->once()->andReturn(false);
         $this->app->instance('App\Services\AccountServiceInterface', $this->accountService);
         
         $this->action('GET', 'AccountController@getActivate', ['activationCode']);
         $this->assertRedirectedToRoute('home');
 
-        //аккаунт успешно активирован
+        // account has been successfully activated
         $this->accountService->shouldReceive('activate')->once()->andReturn(true);
         $this->app->instance('App\Services\AccountServiceInterface', $this->accountService);
         
@@ -73,13 +73,13 @@ class AccountControllerTest extends TestCase
     {
         $data = $this->getUserData();
 
-        //ошибка при авторизации
+        // authorization failed
         Auth::shouldReceive('attempt')->once()->andReturn(false);
 
         $this->action('POST', 'AccountController@postLogin', $data);
         $this->assertResponseStatus(302);
 
-        //авторизация прошла успешно
+        // authorization was successful
         Auth::shouldReceive('attempt')->once()->andReturn(true);
 
         $this->action('POST', 'AccountController@postLogin', $data);
