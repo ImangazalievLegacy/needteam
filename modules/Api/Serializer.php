@@ -5,6 +5,7 @@ namespace Modules\Api;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Modules\Api\Serializer\Adapter\AdapterInterface;
 use InvalidArgumentException;
+use RuntimeException;
 
 class Serializer
 {
@@ -67,28 +68,30 @@ class Serializer
 
     /**
      * @param  string $name
-     * @param  string $class
+     * @param  string $adapter
      * @return $this
      * @throws \InvalidArgumentException
      */
-    public function addAdapter($name, $class)
+    public function addAdapter($name, $adapter)
     {
         if (!is_string($name)) {
             throw new InvalidArgumentException(sprintf('%s expects parameter 1 to be string, %s given', __METHOD__, gettype($name)));
         }
 
-        if (!$class instanceof AdapterInterface) {
-            throw new InvalidArgumentException(sprintf('%s expects parameter 2 to be string, %s given', __METHOD__, gettype($class)));
+        $adapter = is_string($adapter) ? new $adapter : $adapter;
+
+        if (!$adapter instanceof AdapterInterface) {
+            throw new InvalidArgumentException(sprintf('Argument 2 passed to %s must implement %s\Serializer\Adapter\AdapterInterface, %s given', __METHOD__, __NAMESPACE__,  (is_object($adapter) ? get_class($adapter) : gettype($adapter))));
         }
 
-        $this->adapters[$name] = $class;
+        $this->adapters[$name] = $adapter;
 
         return $this;
     }
 
     /**
      * @param  string $name
-     * @return Modules\Api\Serializer\Adapter\AdapterInterface
+     * @return Serializer\Adapter\AdapterInterface
      * @throws \RuntimeException
      */
     public function getAdapter($name)
@@ -97,7 +100,9 @@ class Serializer
             throw new RuntimeException(sprintf('Adapter "%s" not found.', $name));
         }
 
-        return new $this->adapters[$name];
+        $adapter = $this->adapters[$name];
+
+        return is_object($adapter) ? $adapter : new $adapter;
     }
 
     /**
