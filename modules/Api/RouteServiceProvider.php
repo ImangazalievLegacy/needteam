@@ -33,11 +33,9 @@ class RouteServiceProvider extends ServiceProvider
         $this->prefix    = $config->get('api.prefix');
         $this->namespace = $config->get('api.namespace');
 
-        if (!$this->isApiRequest()) {
-            return;
+        if ($this->isApiRequest()) {
+            $this->registerMiddlewares();
         }
-
-        $this->registerMiddlewares();
 
         parent::boot($router);
     }
@@ -56,6 +54,10 @@ class RouteServiceProvider extends ServiceProvider
         $kernel = $this->app->make('Illuminate\Contracts\Http\Kernel');
 
         $kernel->prependMiddleware('Modules\Api\Dispatcher');
+
+        $router = $this->app->make('Illuminate\Contracts\Routing\Registrar');
+
+        $router->middleware('api.auth', 'Modules\Api\Http\Middleware\Authenticate');
     }
 
     /**
@@ -66,10 +68,6 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function map(Router $router)
     {
-        if (!$this->isApiRequest()) {
-            return;
-        }
-
         $router->group(['namespace' => $this->namespace, 'prefix' => $this->prefix], function ($router) {
             require base_path(dirname($this->namespace).'/routes.php');
         });

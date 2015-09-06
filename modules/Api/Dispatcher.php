@@ -9,6 +9,7 @@ use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Response;
 use Exception;
+use RuntimeException;
 
 class Dispatcher
 {
@@ -99,7 +100,6 @@ class Dispatcher
             $values = [
                 ':status'        => $statusCode,
                 ':error-message' => $e->getMessage(),
-                ':response'      => '',
             ];
 
         } catch (Exception $e) {
@@ -110,7 +110,7 @@ class Dispatcher
 
             $values = [
                 ':status'  => $statusCode,
-                ':message' => "Internal Server Error.",
+                ':error-message' => "Internal Server Error.",
             ];
         }
 
