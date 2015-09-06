@@ -14,7 +14,7 @@ class AccountService implements AccountServiceInterface
      * @param  UserRepositoryInterface $userRepository
      * @return void
      */
-	public function __construct(UserRepositoryInterface $userRepository)
+    public function __construct(UserRepositoryInterface $userRepository)
     {
         $this->userRepository = $userRepository;
     }
@@ -23,7 +23,7 @@ class AccountService implements AccountServiceInterface
      * @param  array $data
      * @return bool
      */
-	public function register($data)
+    public function register($data)
     {
         $activationCode = str_random(32);
         $data['hash']   = $activationCode;
@@ -31,7 +31,7 @@ class AccountService implements AccountServiceInterface
         $user = $this->userRepository->register($data);
 
         if ($user === false) {
-        	return false;
+            return false;
         }
 
         event(new UserRegistered($user));
