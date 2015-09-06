@@ -41,6 +41,16 @@ class RouteServiceProvider extends ServiceProvider
     }
 
     /**
+     * Set the root controller namespace for the application.
+     *
+     * @return void
+     */
+    protected function setRootControllerNamespace()
+    {
+
+    }
+
+    /**
      * @return void
      */
     public function register()
