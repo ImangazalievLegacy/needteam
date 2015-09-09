@@ -4,6 +4,7 @@ return [
 
     'prefix'    => env('API_PREFIX', 'api'),
     'namespace' => env('API_NAMESPACE', 'App\Api\Controllers'),
+    'alias'     => env('API_ALIAS', 'api.'),
 
     'formats' => [
 
