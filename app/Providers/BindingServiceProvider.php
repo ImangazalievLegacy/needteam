@@ -31,10 +31,12 @@ class BindingServiceProvider extends ServiceProvider
     protected function bindRepositories()
     {
         App::bind('App\Repositories\User\UserRepositoryInterface', 'App\Repositories\User\DbUserRepository');
+        App::bind('App\Repositories\Project\ProjectRepositoryInterface', 'App\Repositories\Project\DbProjectRepository');
     }
 
     protected function bindServices()
     {
         App::bind('App\Services\AccountServiceInterface', 'App\Services\AccountService');
+        App::bind('App\Services\ProjectServiceInterface', 'App\Services\ProjectService');
     }
 }
