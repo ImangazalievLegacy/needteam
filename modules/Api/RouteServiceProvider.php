@@ -11,6 +11,8 @@ class RouteServiceProvider extends ServiceProvider
 {
     protected $prefix;
 
+    protected $alias;
+
     /**
      * This namespace is applied to the controller routes in your routes file.
      *
@@ -32,6 +34,7 @@ class RouteServiceProvider extends ServiceProvider
         
         $this->prefix    = $config->get('api.prefix');
         $this->namespace = $config->get('api.namespace');
+        $this->alias     = $config->get('api.alias');
 
         if ($this->isApiRequest()) {
             $this->registerMiddlewares();
@@ -78,7 +81,7 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function map(Router $router)
     {
-        $router->group(['namespace' => $this->namespace, 'prefix' => $this->prefix], function ($router) {
+        $router->group(['namespace' => $this->namespace, 'prefix' => $this->prefix, 'as' => $this->alias], function ($router) {
             require base_path(dirname($this->namespace).'/routes.php');
         });
     }
