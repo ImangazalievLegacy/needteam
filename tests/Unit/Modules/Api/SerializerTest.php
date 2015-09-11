@@ -32,11 +32,38 @@ class SerializerTest extends TestCase
         $this->assertInstanceOf('Modules\Api\Serializer\Adapter\AdapterInterface', $serializer->getDefaultAdapter());
     }
 
+    public function testInvalidAdapterNameException()
+    {
+        // if adapter name is not a string
+        $this->setExpectedException('InvalidArgumentException');
+
+        $serializer = new Serializer();
+        $serializer->addAdapter([], 'Modules\Api\Serializer\Adapter\Json');
+    }
+
+    public function testInvalidAdapterException()
+    {
+        // if the specified class does not exist
+        $this->setExpectedException('RuntimeException');
+
+        $serializer = new Serializer();
+        $serializer->addAdapter('adapter', 'adapter');
+    }
+
+    public function testAdapterNotFoundException()
+    {
+        // if the adapter does not exist
+        $this->setExpectedException('RuntimeException');
+
+        $serializer = new Serializer();
+        $serializer->getAdapter('adapter');
+    }
+
     public function testAddAdapter()
     {
         $serializer = new Serializer();
 
-        // as string
+        // as string (the full name of the class)
         $serializer->addAdapter('adapter', 'Modules\Api\Serializer\Adapter\Json');
         
         $this->assertTrue($serializer->hasAdapter('adapter'));

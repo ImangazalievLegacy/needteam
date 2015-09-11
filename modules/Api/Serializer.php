@@ -71,11 +71,16 @@ class Serializer
      * @param  string $adapter
      * @return $this
      * @throws \InvalidArgumentException
+     * @throws \RuntimeException
      */
     public function addAdapter($name, $adapter)
     {
         if (!is_string($name)) {
             throw new InvalidArgumentException(sprintf('%s expects parameter 1 to be string, %s given', __METHOD__, gettype($name)));
+        }
+
+        if (is_string($adapter) and !class_exists($adapter)) {
+            throw new RuntimeException(sprintf("Class '%s' not found in %s", $adapter, __FILE__));
         }
 
         $adapter = is_string($adapter) ? new $adapter : $adapter;
