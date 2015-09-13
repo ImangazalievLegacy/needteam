@@ -5,12 +5,14 @@ namespace App\Api\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Modules\Api\Helpers;
 use Validator;
 
 class UploadController extends Controller
 {
+    use Helpers;
+
     protected $uploadFolder;
     protected $maxFileSize;
 
@@ -38,7 +40,7 @@ class UploadController extends Controller
         $validator = Validator::make($files, $rules);
 
         if ($validator->fails()) {
-            throw new BadRequestHttpException('Invalid data');
+            $this->response()->errorBadRequest();
         }
 
         $paths = [];
