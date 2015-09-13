@@ -4,8 +4,6 @@ namespace Modules\Api;
 
 use Illuminate\Routing\Router;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
-use Modules\Api\Formatter;
-use Modules\Api\Serializer;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -58,18 +56,22 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->instance('api.formatter', new Formatter);
-        $this->app->instance('api.serializer', new Serializer);
+        $aliases = [
+            'api.formatter'  => 'Modules\Api\Formatter',
+            'api.serializer' => 'Modules\Api\Serializer',
+        ];
+
+        foreach ($aliases as $key => $class) {
+            $this->app->bind($key, $class);
+        }
     }
 
     public function registerMiddlewares()
     {
         $kernel = $this->app->make('Illuminate\Contracts\Http\Kernel');
-
         $kernel->prependMiddleware('Modules\Api\Dispatcher');
 
         $router = $this->app->make('Illuminate\Contracts\Routing\Registrar');
-
         $router->middleware('api.auth', 'Modules\Api\Http\Middleware\Authenticate');
     }
 
