@@ -26,17 +26,7 @@ class Dispatcher
     /**
      * @var array
      */
-    protected $formats;
-
-    /**
-     * @var array
-     */
-    protected $mimes;
-
-    /**
-     * @var string
-     */
-    protected $defaultAdapter;
+    protected $config;
 
     /**
      * Constructor.
@@ -49,9 +39,7 @@ class Dispatcher
         $this->formatter  = $app->make('api.formatter');
         $this->serializer = $app->make('api.serializer');
 
-        $this->defaultAdapter = $config->get('api.defaultAdapter');
-        $this->formats        = $config->get('api.formats');
-        $this->mimes          = $config->get('api.mimes');
+        $this->config = $config->get('api');
     }
 
     /**
@@ -107,15 +95,16 @@ class Dispatcher
             $format = $this->getFormat('error');
 
             $statusCode = 500;
+            $message    = $this->config['debug'] ? $e->getMessage() : "Internal Server Error.";
 
             $values = [
                 ':status'  => $statusCode,
-                ':error-message' => "Internal Server Error.",
+                ':error-message' => $message,
             ];
         }
 
-        $defaultAdapter = $this->defaultAdapter;
-        $mime           = array_key_exists($defaultAdapter, $this->mimes) ? $this->mimes[$defaultAdapter] : 'text/plain';
+        $defaultAdapter = $this->config['defaultAdapter'];
+        $mime           = array_key_exists($defaultAdapter, $this->config['mimes']) ? $this->config['mimes'][$defaultAdapter] : 'text/plain';
 
         $content = $this->formatter->setFormat($format)->format($values);
         $content = $this->serializer->serialize($content, $defaultAdapter);
@@ -129,6 +118,6 @@ class Dispatcher
 
     protected function getFormat($name)
     {
-        return $this->formats[$name];
+        return $this->config['formats'][$name];
     }
 }
