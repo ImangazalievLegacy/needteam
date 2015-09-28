@@ -83,9 +83,11 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function map(Router $router)
     {
-        $router->group(['namespace' => $this->namespace, 'prefix' => $this->prefix, 'as' => $this->alias], function ($router) {
-            require base_path(dirname($this->namespace).'/routes.php');
-        });
+        if (!$this->app->routesAreCached()) {
+            $router->group(['namespace' => $this->namespace, 'prefix' => $this->prefix, 'as' => $this->alias], function ($router) {
+                require base_path(dirname($this->namespace).'/routes.php');
+            });
+        }
     }
 
     /**
